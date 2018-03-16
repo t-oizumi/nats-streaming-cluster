@@ -1,0 +1,233 @@
+version: '3'
+services:
+  nats_a:
+    hostname: nats_a
+    build: nats_a
+    working_dir: '/go/src/web'
+    ### 1台構成
+#    command : nats-streaming-server -p 4222 -cluster_sync=false -file_sync=false  -store file -dir store_file
+    ### 3台構成
+#    command: nats-streaming-server -file_buffer_size 10485760 -p 4222 -cluster_sync=false -file_sync=false -store file -dir /go/src/tmp/nats_a -cluster_node_id a -cluster_peers b,c -clustered -cluster nats://nats_a:6222 -routes nats://nats_b:6222,nats://nats_c:6222
+#    command: nats-streaming-server -p 4222 -cluster_sync=false -file_sync=false -store file -dir /go/src/store/nats_a -cluster_log_path /go/src/store/nats_a_cluster -cluster_node_id a -cluster_peers b,c -clustered -cluster nats://nats_a:6222 -routes nats://nats_b:6222,nats://nats_c:6222
+    ### 5台構成
+#    command: nats-streaming-server -p 4222 -file_sync=false -store file -dir store_file -cluster_node_id a -cluster_peers b,c,d,e -clustered -cluster nats://nats_a:6222 -routes nats://nats_b:6222,nats://nats_c:6222,nats://nats_d:6222,nats://nats_e:6222
+#    command: nats-streaming-server -p 4222 -file_sync=true -store file -dir store_file -cluster_node_id a -cluster_peers b,c,d,e -clustered -cluster nats://nats_a:6222 -routes nats://nats_b:6222,nats://nats_c:6222,nats://nats_d:6222,nats://nats_e:6222
+#    command: nats-streaming-server -p 4222 -cluster_sync=false -file_sync=false -store file -dir store_file -cluster_node_id a -cluster_peers b,c,d,e -clustered=true -cluster nats://nats_a:6222 -routes nats://nats_b:6222,nats://nats_c:6222,nats://nats_d:6222,nats://nats_e:6222
+    command: ./start_cmd.sh 2
+#    command: ./cmd.sh
+    volumes:
+      - ./nats_a:/go/src/web
+      - ./tmp:/go/src/tmp
+    tty: true
+  nats_b:
+    hostname: nats_b
+    build: nats_b
+    working_dir: '/go/src/web'
+    ### 3台構成
+#    command: nats-streaming-server -p 4222 -file_buffer_size 10485760 -cluster_sync=false -file_sync=false -store file -dir /go/src/tmp/nats_b -cluster_node_id b -cluster_peers a,c -clustered -cluster nats://nats_b:6222 -routes nats://nats_a:6222,nats://nats_c:6222
+#    command: nats-streaming-server -p 4222 -cluster_sync=false -file_sync=false -store file -dir /go/src/store/nats_b -cluster_log_path /go/src/store/nats_b_cluster -cluster_node_id b -cluster_peers a,c -clustered -cluster nats://nats_b:6222 -routes nats://nats_a:6222,nats://nats_c:6222
+#    command: nats-streaming-server -p 4222 -cluster_sync=false -file_sync=false -store file -dir store_dir -cluster_node_id b -cluster_peers a,c -clustered -cluster nats://nats_b:6222 -routes nats://nats_a:6222,nats://nats_c:6222
+#    command: nats-streaming-server -p 4222 -file_sync=true -store file -dir store_file -cluster_node_id b -cluster_peers a,c -clustered -cluster nats://nats_b:6222 -routes nats://nats_a:6222,nats://nats_c:6222
+    ### 5台構成
+#    command: nats-streaming-server -p 4222 -file_sync=false -store file -dir store_file -cluster_node_id b -cluster_peers a,c,d,e -clustered -cluster nats://nats_b:6222 -routes nats://nats_a:6222,nats://nats_c:6222,nats://nats_d:6222,nats://nats_e:6222
+#    command: nats-streaming-server -p 4222 -file_sync=true -store file -dir store_file -cluster_node_id b -cluster_peers a,c,d,e -clustered -cluster nats://nats_b:6222 -routes nats://nats_a:6222,nats://nats_c:6222,nats://nats_d:6222,nats://nats_e:6222
+#    command: nats-streaming-server -p 4222 -cluster_sync=true -file_sync=false -store file -dir store_file -cluster_node_id b -cluster_peers a,c,d,e -clustered=true -cluster nats://nats_b:6222 -routes nats://nats_a:6222,nats://nats_c:6222,nats://nats_d:6222,nats://nats_e:6222
+    command: ./start_cmd.sh 4
+    volumes:
+      - ./nats_b:/go/src/web
+      - ./tmp:/go/src/tmp
+    links:
+      - nats_a
+    tty: true
+  nats_c:
+    hostname: nats_c
+    build: nats_c
+    working_dir: '/go/src/web'
+    ### 3台構成
+#    command: nats-streaming-server -p 4222 -file_buffer_size 10485760 -cluster_sync=false -file_sync=false -store file -dir /go/src/tmp/nats_c -cluster_node_id c -cluster_peers a,b -clustered -cluster nats://nats_c:6222 -routes nats://nats_b:6222,nats://nats_a:6222
+#    command: nats-streaming-server -p 4222 -cluster_sync=false -file_sync=false -store file -dir /go/src/tmp/nats_c -cluster_log_path /go/src/tmp/nats_c_cluster -cluster_node_id c -cluster_peers a,b -clustered -cluster nats://nats_c:6222 -routes nats://nats_b:6222,nats://nats_a:6222
+#    command: nats-streaming-server -p 4222 -cluster_sync=false -file_sync=false -store file -dir store_dir -cluster_node_id c -cluster_peers a,b -clustered -cluster nats://nats_c:6222 -routes nats://nats_b:6222,nats://nats_a:6222
+#    command: nats-streaming-server -p 4222 -file_sync=true -store file -dir store_file -cluster_node_id c -cluster_peers a,b -clustered -cluster nats://nats_c:6222 -routes nats://nats_b:6222,nats://nats_a:6222
+    ### 5台構成
+#    command: nats-streaming-server -p 4222 -file_sync=false -store file -dir store_file -cluster_node_id c -cluster_peers b,a,d,e -clustered -cluster nats://nats_c:6222 -routes nats://nats_b:6222,nats://nats_a:6222,nats://nats_d:6222,nats://nats_e:6222
+#    command: nats-streaming-server -p 4222 -file_sync=true -store file -dir store_file -cluster_node_id c -cluster_peers b,a,d,e -clustered -cluster nats://nats_c:6222 -routes nats://nats_b:6222,nats://nats_a:6222,nats://nats_d:6222,nats://nats_e:6222
+#    command: nats-streaming-server -p 4222 -cluster_sync=true -file_sync=false -store file -dir store_file -cluster_node_id c -cluster_peers b,a,d,e -clustered=true -cluster nats://nats_c:6222 -routes nats://nats_b:6222,nats://nats_a:6222,nats://nats_d:6222,nats://nats_e:6222
+    command: ./start_cmd.sh 6
+
+    volumes:
+      - ./nats_c:/go/src/web
+      - ./tmp:/go/src/tmp
+    links:
+      - nats_a
+      - nats_b
+    tty: true
+#  nats_d:
+#    hostname: nats_d
+#    build: nats_d
+#    working_dir: '/go/src/web'
+#    ### 5台構成
+##    command: nats-streaming-server -p 4222 -file_sync=false -store file -dir store_file -cluster_node_id d -cluster_peers b,c,a,e -clustered -cluster nats://nats_d:6222 -routes nats://nats_b:6222,nats://nats_c:6222,nats://nats_a:6222,nats://nats_e:6222
+##    command: nats-streaming-server -p 4222 -file_sync=true -store file -dir store_file -cluster_node_id d -cluster_peers b,c,a,e -clustered -cluster nats://nats_d:6222 -routes nats://nats_b:6222,nats://nats_c:6222,nats://nats_a:6222,nats://nats_e:6222
+##    command: nats-streaming-server -p 4222 -cluster_sync=true -file_sync=false -store file -dir store_file -cluster_node_id d -cluster_peers b,c,a,e -clustered=true -cluster nats://nats_d:6222 -routes nats://nats_b:6222,nats://nats_c:6222,nats://nats_a:6222,nats://nats_e:6222
+#    command: ./start_cmd.sh 8
+#    volumes:
+#      - ./nats_d:/go/src/web
+#    links:
+#      - nats_a
+#      - nats_b
+#      - nats_c
+#    tty: true
+#  nats_e:
+#    hostname: nats_e
+#    build: nats_e
+#    working_dir: '/go/src/web'
+#    ### 5台構成
+##    command: nats-streaming-server -p 4222 -file_sync=false -store file -dir store_file -cluster_node_id e -cluster_peers b,c,d,a -clustered -cluster nats://nats_e:6222 -routes nats://nats_b:6222,nats://nats_c:6222,nats://nats_d:6222,nats://nats_a:6222
+##    command: nats-streaming-server -p 4222 -file_sync=true -store file -dir store_file -cluster_node_id e -cluster_peers b,c,d,a -clustered -cluster nats://nats_e:6222 -routes nats://nats_b:6222,nats://nats_c:6222,nats://nats_d:6222,nats://nats_a:6222
+##    command: nats-streaming-server -p 4222 -cluster_sync=true -file_sync=false -store file -dir store_file -cluster_node_id e -cluster_peers b,c,d,a -clustered=true -cluster nats://nats_e:6222 -routes nats://nats_b:6222,nats://nats_c:6222,nats://nats_d:6222,nats://nats_a:6222
+#    command: ./start_cmd.sh 10
+#    volumes:
+#      - ./nats_e:/go/src/web
+#    links:
+#      - nats_a
+#      - nats_b
+#      - nats_c
+#      - nats_d
+#    tty: true
+#  publisher:
+#    hostname: publisher
+#    build: publisher
+#    working_dir: '/go/src/web'
+#    volumes:
+#      - ./publisher:/go/src/web
+#    links:
+#      - nats_a
+#    tty: true
+  subscriber01:
+    hostname: subscriber01
+    build: subscriber
+    working_dir: '/go/src/web'
+    command: ./start_cmd.sh 20 01 BTC
+    volumes:
+      - ./subscriber:/go/src/web
+    links:
+      - nats_a
+    tty: true
+  subscriber02:
+    hostname: subscriber02
+    build: subscriber
+    working_dir: '/go/src/web'
+    command: ./start_cmd.sh 22 02 BTC
+    volumes:
+      - ./subscriber:/go/src/web
+    links:
+      - nats_a
+    tty: true
+  subscriber03:
+    hostname: subscriber03
+    build: subscriber
+    working_dir: '/go/src/web'
+    command: ./start_cmd.sh 24 03 BTC
+    volumes:
+      - ./subscriber:/go/src/web
+    links:
+      - nats_a
+    tty: true
+  subscriber04:
+    hostname: subscriber04
+    build: subscriber
+    working_dir: '/go/src/web'
+    command: ./start_cmd.sh 26 04 BTC
+    volumes:
+      - ./subscriber:/go/src/web
+    links:
+      - nats_a
+    tty: true
+  subscriber05:
+    hostname: subscriber05
+    build: subscriber
+    working_dir: '/go/src/web'
+    command: ./start_cmd.sh 28 05 BTC
+    volumes:
+      - ./subscriber:/go/src/web
+    links:
+      - nats_a
+    tty: true
+  subscriber06:
+    hostname: subscriber06
+    build: subscriber
+    working_dir: '/go/src/web'
+    command: ./start_cmd.sh 30 06 BTC
+    volumes:
+      - ./subscriber:/go/src/web
+    links:
+      - nats_a
+    tty: true
+  subscriber07:
+    hostname: subscriber07
+    build: subscriber
+    working_dir: '/go/src/web'
+    command: ./start_cmd.sh 32 07 BTC
+    volumes:
+      - ./subscriber:/go/src/web
+    links:
+      - nats_a
+    tty: true
+  subscriber08:
+    hostname: subscriber08
+    build: subscriber
+    working_dir: '/go/src/web'
+    command: ./start_cmd.sh 34 08 BTC
+    volumes:
+      - ./subscriber:/go/src/web
+    links:
+      - nats_a
+    tty: true
+  subscriber09:
+    hostname: subscriber09
+    build: subscriber
+    working_dir: '/go/src/web'
+    command: ./start_cmd.sh 36 09 BTC
+    volumes:
+      - ./subscriber:/go/src/web
+    links:
+      - nats_a
+    tty: true
+  subscriber10:
+    hostname: subscriber10
+    build: subscriber
+    working_dir: '/go/src/web'
+    command: ./start_cmd.sh 38 10 BTC
+    volumes:
+      - ./subscriber:/go/src/web
+    links:
+      - nats_a
+    tty: true
+#  stan-bench:
+#    hostname: stan-bench
+#    build: stan-bench
+#    working_dir: '/go/src/web'
+#    volumes:
+#      - ./stan-bench:/go/src/web
+#    links:
+#      - nats_a
+#    tty: true
+  publisher_bench:
+    hostname: publisher_bench
+    build: publisher_bench
+    working_dir: '/go/src/web'
+    volumes:
+      - ./publisher_bench:/go/src/web
+    links:
+      - nats_a
+    tty: true
+#  partner:
+#    hostname: partner
+#    build: partner
+#    working_dir: '/go/src/web'
+##    command: ./start_cmd.sh
+#    volumes:
+#      - ./partner:/go/src/web
+#    links:
+#      - nats_a
+#    tty: true
